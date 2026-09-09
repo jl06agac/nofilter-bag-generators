@@ -1,0 +1,10 @@
+# Packaging print masters. Git tracks the GENERATORS and the notes only.
+# The PDFs, natives, TIFFs and fonts are large binaries made once; they live in Drive
+# (as-printed V1 already there; _working-2026-09 to follow). Never in git.
+*
+!.gitignore
+!*.md
+!_generators/
+!_generators/**
+_generators/**/__pycache__/
+_generators/**/*.pyc
