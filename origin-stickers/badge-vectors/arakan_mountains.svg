@@ -1,0 +1,15 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="800" viewBox="0 0 1600 800">
+<path d="M80 100 L1450 400 L80 700 Z" fill="#141922" stroke="#d8c7a3" stroke-width="22"/>
+<rect x="80" y="100" width="45" height="600" fill="#8b3b24"/>
+<text x="640" y="250" font-size="96" text-anchor="middle" fill="#efe4cf" font-family="Impact, Arial Black">ARAKAN MOUNTAINS</text>
+<text x="620" y="360" font-size="54" text-anchor="middle" fill="#d76a1d" font-family="Arial">WESTERN MYANMAR</text>
+<text x="1120" y="450" font-size="52" text-anchor="middle" fill="#efe4cf" font-family="Arial">WILD-</text>
+<text x="1120" y="510" font-size="52" text-anchor="middle" fill="#efe4cf" font-family="Arial">GROWN</text>
+<text x="540" y="640" font-size="60" text-anchor="middle" fill="#d76a1d" font-family="Arial">HIGHLAND LOT</text>
+
+<g stroke="#7d8f4c" stroke-width="10" fill="none" opacity="0.9">
+<path d="M180 560 Q300 470 450 520 T760 520 T1100 500"/>
+<path d="M220 600 Q420 520 660 580 T1180 560"/>
+</g>
+</svg>

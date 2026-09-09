@@ -6,6 +6,8 @@
 !*.md
 !_generators/
 !_generators/**
+!origin-stickers/
+!origin-stickers/**
 _generators/**/__pycache__/
 _generators/**/*.pyc
 .DS_Store

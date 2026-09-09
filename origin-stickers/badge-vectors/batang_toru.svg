@@ -1,0 +1,18 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200">
+<circle cx="600" cy="600" r="540" fill="#171717" stroke="#d8c7a3" stroke-width="28"/>
+<circle cx="600" cy="600" r="500" fill="none" stroke="#d8c7a3" stroke-width="4"/>
+<text x="600" y="180" font-size="95" text-anchor="middle" fill="#efe4cf" font-family="Impact, Arial Black">BATANG TORU</text>
+<text x="600" y="1030" font-size="85" text-anchor="middle" fill="#efe4cf" font-family="Impact, Arial Black">NORTH SUMATRA</text>
+<text x="600" y="285" font-size="42" text-anchor="middle" fill="#d76a1d" font-family="Arial">FOREST EDGE COFFEE</text>
+<text x="600" y="820" font-size="46" text-anchor="middle" fill="#d76a1d" font-family="Arial">TAPANULI RANGE</text>
+
+<g stroke="#d8c7a3" stroke-width="8" fill="none" stroke-linecap="round">
+<path d="M470 640 Q540 500 610 620"/>
+<path d="M610 620 Q680 500 740 640"/>
+<path d="M505 560 Q610 420 710 560"/>
+<path d="M530 690 Q600 760 680 690"/>
+</g>
+
+<circle cx="600" cy="600" r="170" fill="none" stroke="#d76a1d" stroke-width="3" opacity="0.4"/>
+</svg>

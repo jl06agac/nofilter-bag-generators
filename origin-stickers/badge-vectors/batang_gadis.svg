@@ -1,0 +1,14 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+<path d="M200 120 L1200 120 L1320 500 L1200 880 L200 880 L80 500 Z" fill="#1e2218" stroke="#b68b3d" stroke-width="24"/>
+<text x="700" y="300" font-size="120" text-anchor="middle" fill="#efe4cf" font-family="Impact, Arial Black">BATANG GADIS</text>
+<text x="700" y="430" font-size="56" text-anchor="middle" fill="#efe4cf" font-family="Arial">NORTH SUMATRA</text>
+<text x="700" y="540" font-size="58" text-anchor="middle" fill="#efe4cf" font-family="Arial">BUFFER ZONE LOT</text>
+<text x="700" y="640" font-size="60" text-anchor="middle" fill="#d6a04a" font-family="Arial Italic">DRY HULLED</text>
+
+<g stroke="#efe4cf" stroke-width="6" fill="none">
+<path d="M430 650 Q500 560 610 620 Q700 670 770 620 Q860 560 930 650"/>
+<path d="M520 630 Q550 710 610 740"/>
+<path d="M780 630 Q760 710 700 740"/>
+</g>
+</svg>
