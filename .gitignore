@@ -8,3 +8,4 @@
 !_generators/**
 _generators/**/__pycache__/
 _generators/**/*.pyc
+.DS_Store
