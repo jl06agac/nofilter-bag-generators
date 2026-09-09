@@ -9,3 +9,6 @@
 _generators/**/__pycache__/
 _generators/**/*.pyc
 .DS_Store
+# Rasters are 210 MB and 46 MB: over GitHub's 100 MB limit and regenerable by raster_v2.py.
+_generators/assets/*.raw
+_generators/assets/250/*.raw
