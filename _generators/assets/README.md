@@ -7,3 +7,5 @@ thumbnail each build consumes. `fonts/`: the twelve faces reportlab registers.
 The scripts still expect these BESIDE them (HERE/...) and the native .ai one folder up. To run
 today: copy the script into this folder's parent layout, or adjust HERE. Untangling that path
 assumption is the next small job; the assets are no longer hidden, which was the point.
+
+29 Sep 2026: `im0-v2.raw` is now the V3.2 raster: the clearing in the front tongue is carried down to the fold (rows 382.5-389.5 mm, see the comment above FROZEN_IM0_SHA256 in build_1kg_v3_1.py). `raster_v2.py` can no longer rebuild it (its input `im-000.tif` is gone); the V3.1 raster is still inside `_working-2026-09/NoFilter_1kg_Bag_DIELINE_V3_1.pdf` as /Im0.
