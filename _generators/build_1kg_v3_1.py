@@ -40,7 +40,7 @@ HERE   = os.path.dirname(os.path.abspath(__file__))
 ASSETS = os.path.join(HERE, 'assets')
 NATIVE = os.path.join(HERE, '..', 'NoFilter_1kg_Bag_NATIVEV1.ai')
 # RECONSTRUCTION R0: write a separately named comparison PDF; frozen PDFs must not be overwritten.
-OUT    = os.path.join(HERE, '..', 'NoFilter_1kg_Bag_DIELINE_V3_1_RECONSTRUCTED.pdf')
+OUT    = os.path.join(HERE, '..', 'NoFilter_1kg_Bag_DIELINE_V3_2.pdf')
 # RECONSTRUCTION R0: distinct intermediate name for this reconstructed version.
 OVERLAY= os.path.join(HERE, 'overlay_1kg_v3_1_RECONSTRUCTED.pdf')
 REFIMG = os.path.join(HERE, 'v2-ref-cmyk.jpg')
@@ -112,9 +112,10 @@ SIDE1_SUB = ["BETTER COFFEE", "STRONGER COMMUNITIES", "HEALTHIER FORESTS"]
 ICONS = [("leaf",   ["FORESTS", "PEOPLE", "WILDLIFE"]),
          ("people", ["STRONGER", "COMMUNITIES"]),
          ("sun",    ["BRIGHTER", "FUTURES"])]
-LEGAL = ["NoFilter Pte. Ltd.",
-         "31 Kaki Bukit Road 3, #01-02C, TechLink, Singapore 417818",
-         "UEN 201839882N \u00b7 hello@nofilter.sg"]
+# V3.2 (29 Sep 2026): legal block says where the coffee is roasted, not a company address
+LEGAL = ["Roasted for NoFilter Pte. Ltd.",
+         "at 31 Kaki Bukit Road 3, #01-02C, TechLink, Singapore 417818",
+         "hello@nofilter.sg"]
 RIGHT_SMALL = ["FORESTS", "PEOPLE", "WILDLIFE", "A BRIGHTER FUTURE"]
 GUSSET = ["IF YOU CAN READ THIS,", "YOU\u2019RE OUT OF COFFEE."]
 
@@ -19753,9 +19754,9 @@ def draw_notes(c):
         text(c, 'UAE date window: unlaminated or ink-receptive; roaster stamps dates.', 677.6, 500, 'Archivo', 6.5, 'l', color=BLACK)
     x0, x1 = 677.6, 767.6
     # RECONSTRUCTION R9: freeze the printed caption/date to the target PDF, not today.
-    rows = [("DATE:", "07/09/2026"), ("CLIENT:", "Alexander Clarke"),
+    rows = [("DATE:", "29/09/2026"), ("CLIENT:", "Alexander Clarke"),
             ("PROJECT:", "Hold The Line"), ("DIMENSIONS:", "490 mm x 325 mm"), ("ITEM:", "1 kg Bag"),
-            ("VERSION:", "V3.1 dieline, revised 07/09/2026")]
+            ("VERSION:", "V3.2 dieline, legal block revised 29/09/2026")]
     y = 53.5
     for lab, val in rows:
         text(c, lab, x0, y, 'Archivo', 9, 'l', color=BLACK)
@@ -20041,7 +20042,7 @@ def main():
     # 5) metadata
     if '/Metadata' in writer._root_object: del writer._root_object[NameObject('/Metadata')]
     # RECONSTRUCTION R9: updated PDF title/creator observed in frozen V3.1.
-    writer.add_metadata({'/Title': 'NoFilter 1 kg Bag Dieline V3.1', '/Creator': 'NoFilter V3 vector layout revision', '/Subject': 'Hold The Line 1 kg bag, 490 x 325 mm + 95 mm gusset, 3 mm bleed'})
+    writer.add_metadata({'/Title': 'NoFilter 1 kg Bag Dieline V3.2', '/Creator': 'NoFilter V3 vector layout revision', '/Subject': 'Hold The Line 1 kg bag, 490 x 325 mm + 95 mm gusset, 3 mm bleed'})
     # 6) PDF/X-4: output intent, identification, page boxes
     import datetime as _dt, uuid
     ICC = '/usr/share/texlive/texmf-dist/tex/generic/colorprofiles/FOGRA39L_coated.icc'
@@ -20076,7 +20077,7 @@ def main():
     meta = DecodedStreamObject(); meta.set_data(xmp.encode('utf-8'))
     meta[NameObject('/Type')] = NameObject('/Metadata'); meta[NameObject('/Subtype')] = NameObject('/XML')
     writer._root_object[NameObject('/Metadata')] = writer._add_object(meta)
-    writer.add_metadata({'/GTS_PDFXVersion': 'PDF/X-4', '/Trapped': '/False', '/Title': 'NoFilter 1 kg Bag Dieline V3.1'})
+    writer.add_metadata({'/GTS_PDFXVersion': 'PDF/X-4', '/Trapped': '/False', '/Title': 'NoFilter 1 kg Bag Dieline V3.2'})
     writer._info[NameObject('/Trapped')] = NameObject('/False')
     from pypdf.generic import ByteStringObject; import hashlib
     h = hashlib.md5((docid + iso).encode()).digest()

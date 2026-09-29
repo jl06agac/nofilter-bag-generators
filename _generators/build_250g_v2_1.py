@@ -42,7 +42,7 @@ FONTS = os.path.join(HERE, 'assets', 'fonts')
 NATIVE = os.path.join(HERE, '..', 'NoFilter_250g_Bag_PRINT_NATIVEv1.ai')
 TIF    = os.path.join(HERE, '..', '250 G BACKGROUND IMAGE.tif')
 # RECONSTRUCTION R0: write a separately named comparison PDF; frozen PDFs must not be overwritten.
-OUT    = os.path.join(HERE, '..', 'NoFilter_250g_Bag_DIELINE_V2_1_RECONSTRUCTED.pdf')
+OUT    = os.path.join(HERE, '..', 'NoFilter_250g_Bag_DIELINE_V2_2.pdf')
 # RECONSTRUCTION R0: distinct intermediate name for this reconstructed version.
 OVERLAY= os.path.join(HERE, 'overlay_250g_v2_1_RECONSTRUCTED.pdf')
 REFIMG = os.path.join(HERE, 'v2-ref-cmyk.jpg')
@@ -127,9 +127,10 @@ BODY = ["NoFilter partners exclusively with conservation NGOs and farming commun
 PROOF = "That’s why a share of every sale goes straight back to conservation in the same landscape."
 SIDE1 = ["COFFEE FROM", "FORESTS", "STILL STANDING."]
 SIDE1_SUB = ["BETTER COFFEE", "STRONGER COMMUNITIES", "HEALTHIER FORESTS"]
-LEGAL = ["NoFilter Pte. Ltd.",
-         "31 Kaki Bukit Road 3, #01-02C, TechLink, Singapore 417818",
-         "UEN 201839882N · hello@nofilter.sg"]
+# V2.2 (29 Sep 2026): legal block says where the coffee is roasted, not a company address
+LEGAL = ["Roasted for NoFilter Pte. Ltd.",
+         "at 31 Kaki Bukit Road 3, #01-02C, TechLink, Singapore 417818",
+         "hello@nofilter.sg"]
 GUSSET = ["IF YOU CAN READ THIS,", "YOU\u2019RE OUT OF COFFEE."]
 
 # UAE legal and Arabic strings live in uae_layout.py as editable constants.
@@ -15176,8 +15177,10 @@ def draw_graphics(c):
     # RECONSTRUCTION R4: legal type 6 -> 7.5 pt, tracking .12 -> .15 pt;
     # exact left origins and baselines measured from frozen V2.1. Historical
     # size/leading rationale unknown; these are not a uniform leftward shift.
-    for ln, xp, yp in zip(LEGAL, [877.5006,786.8256,840.3006],
-                         [357.0647,346.4348,335.8049]):
+    # V2.2: the three measured x positions (877.5006, 786.8256, 840.3006) all centred on
+    # 919.2756 pt, so each line is now placed on that axis from its own width.
+    for ln, yp in zip(LEGAL, [357.0647,346.4348,335.8049]):
+        xp = 919.2756 - (pdfmetrics.stringWidth(ln, 'Mono', 7.5) + .15*(len(ln)-1))/2
         if MARKET == 'UAE':
             text(c, ln, BACK_CX, (PH-yp)/PT, 'Mono', 7.5, 'c', tracking=.02)
         else:
@@ -15237,9 +15240,9 @@ def draw_notes(c):
         text(c, 'UAE date window: unlaminated or ink-receptive; roaster stamps dates.', 502.3, 355, 'Archivo', 6.5, 'l', color=BLACK)
     x0, x1 = 502.3, 592.3
     # RECONSTRUCTION R9: freeze the printed caption/date to the target PDF, not today.
-    rows = [("DATE:", "06/09/2026"), ("CLIENT:", "Alexander Clarke"),
+    rows = [("DATE:", "29/09/2026"), ("CLIENT:", "Alexander Clarke"),
             ("PROJECT:", "Hold The Line"), ("DIMENSIONS:", "400 mm x 200 mm + 70 mm gusset"), ("ITEM:", "250 g Bag"),
-            ("VERSION:", "V2 dieline, build 06/09/2026 12:18")]
+            ("VERSION:", "V2.2 dieline, legal block revised 29/09/2026")]
     y = 83.0
     for lab, val in rows:
         text(c, lab, x0, y, 'Archivo', 9, 'l', color=BLACK)
@@ -15549,7 +15552,7 @@ def main():
     meta = DecodedStreamObject(); meta.set_data(xmp.encode('utf-8'))
     meta[NameObject('/Type')] = NameObject('/Metadata'); meta[NameObject('/Subtype')] = NameObject('/XML')
     writer._root_object[NameObject('/Metadata')] = writer._add_object(meta)
-    writer.add_metadata({'/GTS_PDFXVersion': 'PDF/X-4', '/Trapped': '/False', '/Title': 'NoFilter 250 g Bag Dieline V2.1',
+    writer.add_metadata({'/GTS_PDFXVersion': 'PDF/X-4', '/Trapped': '/False', '/Title': 'NoFilter 250 g Bag Dieline V2.2',
                          '/Creator': 'NoFilter build_250.py (from NoFilter_250g_Bag_PRINT_NATIVEv1.ai)',
                          '/Subject': 'Hold The Line 250 g bag, 400 x 200 mm + 70 mm gusset, 3 mm bleed'})
     writer._info[NameObject('/Trapped')] = NameObject('/False')
