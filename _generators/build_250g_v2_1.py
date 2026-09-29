@@ -20,6 +20,8 @@ Run locally with the baseline assets; writes only a separately named comparison 
 # in the frozen PDF. The base script already defined CMYKColorSep and remapped it
 # to the native Lab-alternate Separation. The new spec wording did NOT create it.
 # Frozen page-content MD5: 26832e51872ff9dcb2d0f1a76860631f
+MARKET = 'SG'  # SG or UAE; frozen Singapore files are never overwritten.
+
 import os, math, copy, datetime, zlib
 import pypdf.filters; pypdf.filters.MAX_DECLARED_STREAM_LENGTH = 10**10
 # RECONSTRUCTION R0: current pypdf needs sufficient room for the known 220 MB CMYK image.
@@ -35,15 +37,16 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.colors import CMYKColor, CMYKColorSep
 
 HERE   = os.path.dirname(os.path.abspath(__file__))
-FONTS  = os.path.join(HERE, '..', 'fonts')
-NATIVE = os.path.join(HERE, '..', '..', 'NoFilter_250g_Bag_PRINT_NATIVEv1.ai')
-TIF    = os.path.join(HERE, '..', '..', '250 G BACKGROUND IMAGE.tif')
+ASSETS = os.path.join(HERE, 'assets', '250')
+FONTS = os.path.join(HERE, 'assets', 'fonts')
+NATIVE = os.path.join(HERE, '..', 'NoFilter_250g_Bag_PRINT_NATIVEv1.ai')
+TIF    = os.path.join(HERE, '..', '250 G BACKGROUND IMAGE.tif')
 # RECONSTRUCTION R0: write a separately named comparison PDF; frozen PDFs must not be overwritten.
-OUT    = os.path.join(HERE, '..', '..', 'NoFilter_250g_Bag_DIELINE_V2_1_RECONSTRUCTED.pdf')
+OUT    = os.path.join(HERE, '..', 'NoFilter_250g_Bag_DIELINE_V2_1_RECONSTRUCTED.pdf')
 # RECONSTRUCTION R0: distinct intermediate name for this reconstructed version.
 OVERLAY= os.path.join(HERE, 'overlay_250g_v2_1_RECONSTRUCTED.pdf')
 REFIMG = os.path.join(HERE, 'v2-ref-cmyk.jpg')
-RAW    = os.path.join(HERE, 'im0-250.raw')
+RAW    = os.path.join(ASSETS, 'im0-250.raw')
 
 PT = 72/25.4
 PW, PH = 1778.1, 1066.86
@@ -128,6 +131,16 @@ LEGAL = ["NoFilter Pte. Ltd.",
          "31 Kaki Bukit Road 3, #01-02C, TechLink, Singapore 417818",
          "UEN 201839882N · hello@nofilter.sg"]
 GUSSET = ["IF YOU CAN READ THIS,", "YOU\u2019RE OUT OF COFFEE."]
+
+# UAE legal and Arabic strings live in uae_layout.py as editable constants.
+if MARKET not in ('SG', 'UAE'):
+    raise ValueError('MARKET must be SG or UAE')
+if MARKET == 'UAE':
+    from uae_layout import UAE_LEGAL, draw_uae_side, register_arabic
+    register_arabic(os.path.join(HERE, 'assets', 'fonts'))
+    LEGAL = UAE_LEGAL
+    OUT = os.path.join(HERE, '..', 'NoFilter_250g_Bag_UAE_DIELINE_V1.pdf')
+    OVERLAY = os.path.join(HERE, 'overlay_250g_uae.pdf')
 
 # ================= drawing helpers =================
 def text(c, s, x, y, font, size, align='l', tracking=0.0, color=WHITE):
@@ -15165,7 +15178,10 @@ def draw_graphics(c):
     # size/leading rationale unknown; these are not a uniform leftward shift.
     for ln, xp, yp in zip(LEGAL, [877.5006,786.8256,840.3006],
                          [357.0647,346.4348,335.8049]):
-        measured_text(c, ln, xp, yp, 'Mono', 7.5, .15)
+        if MARKET == 'UAE':
+            text(c, ln, BACK_CX, (PH-yp)/PT, 'Mono', 7.5, 'c', tracking=.02)
+        else:
+            measured_text(c, ln, xp, yp, 'Mono', 7.5, .15)
 
     # RECONSTRUCTION R5: 250G raised to y=343.0137 pt, matching the lower GPS
     # baseline; x=479.5654 pt and 8 pt type/tracking .8 are retained.
@@ -15217,6 +15233,8 @@ def draw_gusset(c):
 # ================= overlay: NOTES =================
 def draw_notes(c):
     c.saveState()
+    if MARKET == 'UAE':
+        text(c, 'UAE date window: unlaminated or ink-receptive; roaster stamps dates.', 502.3, 355, 'Archivo', 6.5, 'l', color=BLACK)
     x0, x1 = 502.3, 592.3
     # RECONSTRUCTION R9: freeze the printed caption/date to the target PDF, not today.
     rows = [("DATE:", "06/09/2026"), ("CLIENT:", "Alexander Clarke"),
@@ -15504,7 +15522,12 @@ def main():
     # no alternative print profile is selected by this reconstruction.
     ICC = os.environ.get('NOFILTER_ICC', ICC)
     if not os.path.exists(ICC): ICC = os.path.join(HERE, '..', 'icc', 'FOGRA39L_coated.icc')
-    icc = DecodedStreamObject(); icc.set_data(open(ICC, 'rb').read()); icc[NameObject('/N')] = NumberObject(4)
+    if os.path.exists(ICC):
+        icc_bytes = open(ICC, 'rb').read()
+    else:
+        profile_reference = PdfReader(os.path.join(HERE, '..', '_working-2026-09', 'NoFilter_250g_Bag_DIELINE_V2_1.pdf'))
+        icc_bytes = profile_reference.trailer['/Root']['/OutputIntents'][0].get_object()['/DestOutputProfile'].get_object().get_data()
+    icc = DecodedStreamObject(); icc.set_data(icc_bytes); icc[NameObject('/N')] = NumberObject(4)
     icc_ref = writer._add_object(icc)
     oi = DictionaryObject({NameObject('/Type'): NameObject('/OutputIntent'), NameObject('/S'): NameObject('/GTS_PDFX'),
         NameObject('/OutputConditionIdentifier'): TextStringObject('FOGRA39'), NameObject('/RegistryName'): TextStringObject('http://www.color.org'),

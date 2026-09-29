@@ -20,6 +20,8 @@ Run locally with the baseline assets; writes only a separately named comparison 
 # in the frozen PDF. The base script already defined CMYKColorSep and remapped it
 # to the native Lab-alternate Separation. The new spec wording did NOT create it.
 # Frozen page-content MD5: 374f466d1c45d142d06b7b77dd10f7cb
+MARKET = 'SG'  # SG or UAE; frozen Singapore files are never overwritten.
+
 import os, math, copy, datetime
 import pypdf.filters; pypdf.filters.MAX_DECLARED_STREAM_LENGTH = 10**10
 # RECONSTRUCTION R0: current pypdf needs sufficient room for the known 220 MB CMYK image.
@@ -35,13 +37,14 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.colors import CMYKColor, CMYKColorSep
 
 HERE   = os.path.dirname(os.path.abspath(__file__))
+ASSETS = os.path.join(HERE, 'assets')
 NATIVE = os.path.join(HERE, '..', 'NoFilter_1kg_Bag_NATIVEV1.ai')
 # RECONSTRUCTION R0: write a separately named comparison PDF; frozen PDFs must not be overwritten.
 OUT    = os.path.join(HERE, '..', 'NoFilter_1kg_Bag_DIELINE_V3_1_RECONSTRUCTED.pdf')
 # RECONSTRUCTION R0: distinct intermediate name for this reconstructed version.
 OVERLAY= os.path.join(HERE, 'overlay_1kg_v3_1_RECONSTRUCTED.pdf')
 REFIMG = os.path.join(HERE, 'v2-ref-cmyk.jpg')
-RAW    = os.path.join(HERE, 'im0-v2.raw')     # extended canopy/clearing raster from raster_v2.py (9064x6072 CMYK)
+RAW    = os.path.join(ASSETS, 'im0-v2.raw')     # extended canopy/clearing raster from raster_v2.py (9064x6072 CMYK)
 
 PT = 72/25.4
 PW, PH = 2275.33, 1501.33
@@ -61,11 +64,11 @@ GUS_CX = FRONT + 75.0            # 198.5
 
 # ---- fonts ----
 rl_config.canvas_basefontname = 'Archivo'
-pdfmetrics.registerFont(TTFont('BigShoulders', os.path.join(HERE, 'fonts/BigShoulders-Medium.ttf')))
-pdfmetrics.registerFont(TTFont('BigShouldersXB', os.path.join(HERE, 'fonts/BigShoulders-Black.ttf')))
-pdfmetrics.registerFont(TTFont('ArchivoM',      os.path.join(HERE, 'fonts/Archivo-Medium.ttf')))
-pdfmetrics.registerFont(TTFont('Archivo',      os.path.join(HERE, 'fonts/Archivo-Regular.ttf')))
-pdfmetrics.registerFont(TTFont('Mono',         os.path.join(HERE, 'fonts/JetBrainsMono-Regular.ttf')))
+pdfmetrics.registerFont(TTFont('BigShoulders', os.path.join(ASSETS, 'fonts/BigShoulders-Medium.ttf')))
+pdfmetrics.registerFont(TTFont('BigShouldersXB', os.path.join(ASSETS, 'fonts/BigShoulders-Black.ttf')))
+pdfmetrics.registerFont(TTFont('ArchivoM',      os.path.join(ASSETS, 'fonts/Archivo-Medium.ttf')))
+pdfmetrics.registerFont(TTFont('Archivo',      os.path.join(ASSETS, 'fonts/Archivo-Regular.ttf')))
+pdfmetrics.registerFont(TTFont('Mono',         os.path.join(ASSETS, 'fonts/JetBrainsMono-Regular.ttf')))
 
 WHITE = CMYKColor(0, 0, 0, 0)
 BLACK = CMYKColor(0, 0, 0, 1)
@@ -114,6 +117,16 @@ LEGAL = ["NoFilter Pte. Ltd.",
          "UEN 201839882N \u00b7 hello@nofilter.sg"]
 RIGHT_SMALL = ["FORESTS", "PEOPLE", "WILDLIFE", "A BRIGHTER FUTURE"]
 GUSSET = ["IF YOU CAN READ THIS,", "YOU\u2019RE OUT OF COFFEE."]
+
+# UAE legal and Arabic strings live in uae_layout.py as editable constants.
+if MARKET not in ('SG', 'UAE'):
+    raise ValueError('MARKET must be SG or UAE')
+if MARKET == 'UAE':
+    from uae_layout import UAE_LEGAL, draw_uae_side, register_arabic
+    register_arabic(os.path.join(HERE, 'assets', 'fonts'))
+    LEGAL = UAE_LEGAL
+    OUT = os.path.join(HERE, '..', 'NoFilter_1kg_Bag_UAE_DIELINE_V1.pdf')
+    OVERLAY = os.path.join(HERE, 'overlay_1kg_uae.pdf')
 
 # ================= drawing helpers =================
 def text(c, s, x, y, font, size, align='l', tracking=0.0, color=WHITE):
@@ -19709,7 +19722,10 @@ def draw_graphics(c):
     c.saveState(); c.transform(0, .85, -.85, 0, 1632, 715)
     t = c.beginText(); t.setFont('BigShouldersXB', size); t.setCharSpace(-0.01*size); t.setWordSpace(0.12*size); t.setFillColor(WHITE); t.setTextOrigin(0, 0); t.textOut('HOLD THE LINE'); c.drawText(t)
     c.restoreState()
-    text(c, 'NOFILTER.SG \u00b7 NOFILTER.AE', RIGHT_CX, 370.0, 'Archivo', 7, 'c', tracking=0.15)
+    if MARKET == 'UAE':
+        draw_uae_side(c, X, Y, text, RIGHT, FLAT_R, TOP+236, 374.0, '1kg')
+    else:
+        text(c, 'NOFILTER.SG \u00b7 NOFILTER.AE', RIGHT_CX, 370.0, 'Archivo', 7, 'c', tracking=0.15)
     c.restoreState()
 
 def draw_gusset(c):
@@ -19733,6 +19749,8 @@ def draw_gusset(c):
 # ================= overlay: NOTES (spec block, non-printing area) =================
 def draw_notes(c):
     c.saveState()
+    if MARKET == 'UAE':
+        text(c, 'UAE date window: unlaminated or ink-receptive; roaster stamps dates.', 677.6, 500, 'Archivo', 6.5, 'l', color=BLACK)
     x0, x1 = 677.6, 767.6
     # RECONSTRUCTION R9: freeze the printed caption/date to the target PDF, not today.
     rows = [("DATE:", "07/09/2026"), ("CLIENT:", "Alexander Clarke"),
@@ -20031,7 +20049,12 @@ def main():
     # no alternative print profile is selected by this reconstruction.
     ICC = os.environ.get('NOFILTER_ICC', ICC)
     from pypdf.generic import StreamObject, DecodedStreamObject
-    icc = DecodedStreamObject(); icc.set_data(open(ICC, 'rb').read()); icc[NameObject('/N')] = NumberObject(4)
+    if os.path.exists(ICC):
+        icc_bytes = open(ICC, 'rb').read()
+    else:
+        profile_reference = PdfReader(os.path.join(HERE, '..', '_working-2026-09', 'NoFilter_1kg_Bag_DIELINE_V3_1.pdf'))
+        icc_bytes = profile_reference.trailer['/Root']['/OutputIntents'][0].get_object()['/DestOutputProfile'].get_object().get_data()
+    icc = DecodedStreamObject(); icc.set_data(icc_bytes); icc[NameObject('/N')] = NumberObject(4)
     icc_ref = writer._add_object(icc)
     oi = DictionaryObject({NameObject('/Type'): NameObject('/OutputIntent'), NameObject('/S'): NameObject('/GTS_PDFX'),
         NameObject('/OutputConditionIdentifier'): TextStringObject('FOGRA39'), NameObject('/RegistryName'): TextStringObject('http://www.color.org'),
